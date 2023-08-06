@@ -16,36 +16,39 @@
 			<div class="calculator-card">
 				<div class="screen">
 					<div class="screen-result"></div>
-					<div class="screen-input"></div>
+					<div class="bottom-container">
+						<div class="screen-input"></div>
+						<div class="screen-messages"></div>
+					</div>
 				</div>
 				<div class="keypad">
 					<!-- 5 rows and 4 columns -->
 					<div class="row-container one">
 						<div class="double-sized">
-							<button class="clear">C</button>
+							<button class="clear meta">C</button>
 						</div>
 						<div class="single-sized">
-							<button>CE</button>
-							<button>÷</button>
+							<button class="meta">CE</button>
+							<button class="operator">÷</button>
 						</div>
 					</div>
 					<div class="row-container two">
 						<button>7</button>
 						<button>8</button>
 						<button>9</button>
-						<button>×</button>
+						<button class="operator">×</button>
 					</div>
 					<div class="row-container three">
 						<button>4</button>
 						<button>5</button>
 						<button>6</button>
-						<button>−</button>
+						<button class="operator">−</button>
 					</div>
 					<div class="row-container four">
 						<button>1</button>
 						<button>2</button>
 						<button>3</button>
-						<button>+</button>
+						<button class="operator">+</button>
 					</div>
 					<div class="row-container five">
 						<div class="single-sized">
@@ -53,7 +56,7 @@
 							<button>.</button>
 						</div>
 						<div class="double-sized">
-							<button class="equal">=</button>
+							<button class="equal meta">=</button>
 						</div>
 					</div>
 				</div>
