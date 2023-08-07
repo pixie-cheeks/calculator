@@ -1,20 +1,3 @@
-// input limit at 25 characters
-// output limit at 12 characters
-
-const displayInput = document.querySelector('.screen-input');
-const displayOutput = document.querySelector('.screen-result');
-const displayMessage = document.querySelector('.screen-messages');
-const inputBtns = document.querySelectorAll('button:not(.meta)');
-const clearBtns = document.querySelectorAll('.meta:not(.equal)')
-const equalBtn = document.querySelector('.equal');
-
-inputBtns.forEach(button => {
-	button.addEventListener('click', populateInput);
-});
-clearBtns.forEach(button => button.addEventListener('click', clearInput));
-
-equalBtn.addEventListener('click', resultFromEqual);
-
 function add(addendOne, addendTwo) {
 	return addendOne + addendTwo;
 }
@@ -42,7 +25,7 @@ function operate(operator, firstNum, secondNum) {
 		case '÷':
 			return divide(firstNum, secondNum);
 		default:
-			return 'Error from operate()'
+			return 'Error from operate()';
 	}
 }
 
@@ -177,9 +160,53 @@ function displayResult(result) {
 function handleOverflow(answer) {
 	let output = parseFloat(answer.toFixed(11));
 	if (output.toString().length > 12) {
-		displayMessage.textContent = 'Maximun limit exceeded.';
+		displayMessage.textContent = 'Maximum limit exceeded.';
 	} else {
 		displayOutput.textContent = output;
 		displayMessage.textContent = '';
 	}
 }
+
+function attachKeyboard(event) {
+	const validKeys = [
+		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+		'.', 'Enter', '+', '-', '*', '/', 'C', 'Backspace'
+	];
+	if (!validKeys.includes(event.key)) return;
+
+	const easyToMap = document.querySelectorAll('button:not(.meta, .operator)');
+	easyToMap.forEach(button => {
+		if (button.textContent === event.key) {
+			button.click();
+		}
+	});
+
+	const harderToMap = document.querySelectorAll('.meta, .operator');
+	harderToMap.forEach(button => {
+		if (button.id === event.key) {
+			button.click();
+		}
+	});
+}
+
+// input limit at 25 characters
+// output limit at 12 characters
+
+const displayInput = document.querySelector('.screen-input');
+const displayOutput = document.querySelector('.screen-result');
+const displayMessage = document.querySelector('.screen-messages');
+const inputBtns = document.querySelectorAll('button:not(.meta)');
+const clearBtns = document.querySelectorAll('.meta:not(.equal)')
+const equalBtn = document.querySelector('.equal');
+
+inputBtns.forEach(button => {
+	button.addEventListener('click', populateInput);
+});
+clearBtns.forEach(button => button.addEventListener('click', clearInput));
+equalBtn.addEventListener('click', resultFromEqual);
+
+const calculator = document.querySelector('.calculator-card');
+
+calculator.addEventListener('click', () => calculator.focus);
+
+calculator.addEventListener('keydown', attachKeyboard);
