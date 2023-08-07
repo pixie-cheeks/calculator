@@ -47,7 +47,7 @@ h1 {
 .screen-result {
 	flex: 1 0;
 	font-size: 60px;
-	color: white;
+	color: rgba(255, 255, 255, 0.651);
 	display: flex;
 	justify-content: flex-end;
 	align-items: flex-end;

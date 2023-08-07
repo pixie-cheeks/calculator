@@ -1,7 +1,3 @@
-let firstNum;
-let secondNum;
-let operator;
-
 // input limit at 25 characters
 // output limit at 12 characters
 
@@ -9,14 +5,16 @@ const displayInput = document.querySelector('.screen-input');
 const displayOutput = document.querySelector('.screen-result');
 const displayMessage = document.querySelector('.screen-messages');
 const inputBtns = document.querySelectorAll('button:not(.meta)');
+const clearBtns = document.querySelectorAll('.meta:not(.equal)')
+const equalBtn = document.querySelector('.equal');
 
 inputBtns.forEach(button => {
-	if (button.className.includes('operator')) {
-		button.addEventListener('click', inputOperators);
-	} else {
-		button.addEventListener('click', inputDigits);
-	}
+	button.addEventListener('click', populateInput);
 });
+
+clearBtns.forEach(button => button.addEventListener('click', clearInput));
+
+equalBtn.addEventListener('click', computeResult);
 
 function add(addendOne, addendTwo) {
 	return addendOne + addendTwo;
@@ -49,39 +47,94 @@ function operate(operator, firstNum, secondNum) {
 	}
 }
 
-function inputDigits(event) {
-	const display = displayInput.textContent;
-	const button = event.target.textContent;
+function populateInput(event) {
+	const scrnInfo = {
+		event: event,
+		text: displayInput.textContent,
+		button: event.target.textContent,
+		className: event.target.className,
+		exprLength: displayInput.textContent.split(' ').length,
+		isScrnEmpty: displayInput.textContent === '',
+	}
+	scrnInfo.isOperatorAtEnd = scrnInfo.exprLength === 2;
+	scrnInfo.isOperatorOnScrn = scrnInfo.exprLength > 1 && !scrnInfo.isOperatorAtEnd;
+	scrnInfo.isBtnDigit = /\d/.test(scrnInfo.button);
+	scrnInfo.isBtnOperator = scrnInfo.className.includes('operator');
+	scrnInfo.isAllDigits = /^[\d\.]+$/.test(scrnInfo.text);
+	scrnInfo.switchLast = button => scrnInfo.text.replace(/.$/, button);
 
-	if (display.length === 25) {
+
+	if (scrnInfo.text.length === 25) {
 		displayMessage.textContent = 'Max Char limit reached.';
-		return;
-	} else if (button === '.' && display.includes('.')) {
-		return;
-	} else if (isNaN(+display.charAt(display.length - 1))) {
-		displayInput.textContent += ' ' + button;
-		displayMessage.textContent = '';
+	} else if (scrnInfo.isBtnDigit) {
+		handleDigits(scrnInfo);
+	} else if (scrnInfo.isBtnOperator) {
+		handleOperators(scrnInfo);
 	} else {
-		displayInput.textContent += button;
-		displayMessage.textContent = '';
+		handleDecimal(scrnInfo);
 	}
 }
 
-function inputOperators(event) {
-	const display = displayInput.textContent;
-	const button = event.target.textContent;
-
-	if (display.length === 25) {
-		displayMessage.textContent = 'Max Char limit reached.';
-		return;
-	} else if (display.length === 0) {
-		return;
-	} else if (isNaN(+display.charAt(display.length - 1))) {
-		if (display.charAt(display.length - 1) === button) return;
-		displayInput.textContent = display.slice(0, display.length - 1) + button;
-		displayMessage.textContent = '';
-	} else  {
-		displayInput.textContent += ' ' +button;
-		displayMessage.textContent = '';
+function handleDigits(screen) {
+	if (screen.isScrnEmpty) {
+		displayInput.textContent = screen.button;
+	} else if (screen.isOperatorAtEnd) {
+		displayInput.textContent += ' ' + screen.button;
+	} else {
+		displayInput.textContent += screen.button;
 	}
+}
+
+function handleOperators(screen) {
+	if (screen.isAllDigits) {
+		displayInput.textContent += ' ' + screen.button;
+	} else if (screen.isOperatorAtEnd) {
+		displayInput.textContent = screen.switchLast(screen.button);
+	}
+}
+
+function handleDecimal(screen) {
+	const isDecimalInNumOne = screen.text.split(' ')[0].includes('.');
+	const isDecimalInNumTwo = `${screen.text.split(' ')[2]}`.includes('.');
+	if (screen.isAllDigits && !isDecimalInNumOne) {
+		displayInput.textContent += screen.button;
+	} else if (screen.isOperatorOnScrn && !isDecimalInNumTwo) {
+		displayInput.textContent += screen.button;
+	}
+}
+
+function clearInput(event) {
+	const button = event.target;
+	const text = displayInput.textContent.replace();
+	const isOutputEmpty = displayOutput.textContent === '';
+	if (button.className.includes('clear')) {
+		displayInput.textContent = '';
+		displayOutput.textContent = '';
+	} else {
+		if (isOutputEmpty) {
+			displayInput.textContent = handleCE(text);
+		} else {
+			displayInput.textContent = handleCE(text);
+			displayOutput.textContent = '';
+		}
+	}
+	displayMessage.textContent = '';
+
+	function handleCE(string) {
+		const targetChar = string.charAt(string.length - 1);
+		const isNotDigit = /[ \D]/.test(targetChar);
+		if (isNotDigit) {
+			return string.replace(/[ \D]+/g, '');
+		} else {
+			return string.slice(0, string.length - 1);
+		}
+	}
+}
+
+function computeResult(event) {
+	const operandOne = Number(displayInput.textContent.split(' ')[0]);
+	const operandTwo = Number(displayInput.textContent.split(' ')[2]);
+	const operator = displayInput.textContent.split(' ')[1];
+
+	displayOutput.textContent = operate(operator, operandOne, operandTwo);
 }
