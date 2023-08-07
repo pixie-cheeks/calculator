@@ -14,7 +14,7 @@ inputBtns.forEach(button => {
 
 clearBtns.forEach(button => button.addEventListener('click', clearInput));
 
-equalBtn.addEventListener('click', computeResult);
+equalBtn.addEventListener('click', resultFromEqual);
 
 function add(addendOne, addendTwo) {
 	return addendOne + addendTwo;
@@ -90,6 +90,8 @@ function handleOperators(screen) {
 		displayInput.textContent += ' ' + screen.button;
 	} else if (screen.isOperatorAtEnd) {
 		displayInput.textContent = screen.switchLast(screen.button);
+	} else if (screen.isOperatorOnScrn) {
+		resultFromChaining(screen);
 	}
 }
 
@@ -131,10 +133,36 @@ function clearInput(event) {
 	}
 }
 
-function computeResult(event) {
+function resultFromEqual() {
+	const operandOne = Number(displayInput.textContent.split(' ')[0]);
+	const operandTwo = Number(displayInput.textContent.split(' ')[2]);
+	const operator = displayInput.textContent.split(' ')[1];
+	const result = operate(operator, operandOne, operandTwo);
+
+	const isOuputValid = !isNaN(+result);
+	const isAllDigits = /^\d+$/.test(displayInput.textContent);
+	if (isOuputValid) {
+		displayResult(result);
+		displayMessage.textContent = '';
+	} else if (isAllDigits) {
+		displayResult(Number(displayInput.textContent));
+		displayMessage.textContent = '';
+	} else {
+		displayMessage.textContent = 'Invalid input.';
+	}
+}
+
+function resultFromChaining(screen) {
 	const operandOne = Number(displayInput.textContent.split(' ')[0]);
 	const operandTwo = Number(displayInput.textContent.split(' ')[2]);
 	const operator = displayInput.textContent.split(' ')[1];
 
-	displayOutput.textContent = operate(operator, operandOne, operandTwo);
+	const result = operate(operator, operandOne, operandTwo);
+	displayInput.textContent = result + ' ' + screen.button;
+
+	displayResult(result);
+}
+
+function displayResult(result) {
+	displayOutput.textContent = result;
 }
