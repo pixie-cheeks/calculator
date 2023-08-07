@@ -11,7 +11,6 @@ const equalBtn = document.querySelector('.equal');
 inputBtns.forEach(button => {
 	button.addEventListener('click', populateInput);
 });
-
 clearBtns.forEach(button => button.addEventListener('click', clearInput));
 
 equalBtn.addEventListener('click', resultFromEqual);
@@ -83,6 +82,7 @@ function handleDigits(screen) {
 	} else {
 		displayInput.textContent += screen.button;
 	}
+	displayMessage.textContent = '';
 }
 
 function handleOperators(screen) {
@@ -139,14 +139,17 @@ function resultFromEqual() {
 	const operator = displayInput.textContent.split(' ')[1];
 	const result = operate(operator, operandOne, operandTwo);
 
+	const isZero = operandTwo === 0;
+	const isDivision = operator === '÷';
 	const isOuputValid = !isNaN(+result);
 	const isAllDigits = /^\d+$/.test(displayInput.textContent);
-	if (isOuputValid) {
+
+	if (isDivision && isZero) {
+		displayMessage.textContent = 'Division by zero is undefined.';
+	} else if (isOuputValid) {
 		displayResult(result);
-		displayMessage.textContent = '';
 	} else if (isAllDigits) {
 		displayResult(Number(displayInput.textContent));
-		displayMessage.textContent = '';
 	} else {
 		displayMessage.textContent = 'Invalid input.';
 	}
@@ -164,5 +167,19 @@ function resultFromChaining(screen) {
 }
 
 function displayResult(result) {
-	displayOutput.textContent = result;
+	if (result.toString().length > 12) {
+		handleOverflow(result);
+	} else {
+		displayOutput.textContent = result;
+	}
+}
+
+function handleOverflow(answer) {
+	let output = parseFloat(answer.toFixed(11));
+	if (output.toString().length > 12) {
+		displayMessage.textContent = 'Maximun limit exceeded.';
+	} else {
+		displayOutput.textContent = output;
+		displayMessage.textContent = '';
+	}
 }
